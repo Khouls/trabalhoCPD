@@ -5,6 +5,8 @@
 #include <vector>
 #include <set>
 
+#include "qsort.hpp"
+
 using namespace std;
 
 struct UserReview {
@@ -12,8 +14,27 @@ struct UserReview {
     float rating;
 };
 
-#define MAX_REVIEWS 20
+bool operator==(const UserReview& r1, const UserReview& r2) {
+    return r1.rating == r2.rating;
+}
 
+bool operator>=(const UserReview& r1, const UserReview& r2) {
+    return r1.rating >= r2.rating;
+}
+
+bool operator>(const UserReview& r1, const UserReview& r2) {
+    return r1.rating > r2.rating;
+}
+
+bool operator<=(const UserReview& r1, const UserReview& r2) {
+    return r1.rating <= r2.rating;
+}
+
+bool operator<(const UserReview& r1, const UserReview& r2) {
+    return r1.rating < r2.rating;
+}
+
+#define MAX_REVIEWS 20
 
 class User {
     public :
@@ -42,6 +63,8 @@ void User::addReview(UserReview review) {
 }
 
 void User::getReviews(vector<UserReview>* outVector) {
+    quicksort(&reviews, 0, reviews.size()-1);
+
     for (int i = 0; i < reviews.size() && i < MAX_REVIEWS; i++)
         outVector->push_back(reviews[i]);
 }

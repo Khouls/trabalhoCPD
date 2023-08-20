@@ -79,6 +79,8 @@ int main() {
     user->addReview(review);
 
   }
+
+  cout << "---------------------------" << endl;
   
   vector<int> playersFound;
   trieHead->searchPrefix("Fer", &playersFound);
@@ -88,7 +90,24 @@ int main() {
     cout << "ID in hashTable: " << player->id << " | ";
     cout << "Sofifa ID: " << player->sofifaID << " | ";
     cout << "Name: " << player->name << " | ";
-    cout << "Avg. Rating: " << player->totalRating << endl;
+    cout << "Avg. Rating: " << player->totalRating / player->ratingCount << endl;
   }
+
+  cout << "---------------------------" << endl;
+
+  User* user = reviewsList.get(4);
+  vector<UserReview> reviewsFound;
+
+  user->getReviews(&reviewsFound);
+
+  for (int i = 0; i < reviewsFound.size(); ++i){
+    Player* player = playersList.get(reviewsFound[i].playerID);
+    cout << "Sofifa ID: " << player->sofifaID << " | ";
+    cout << "Name: " << player->name << " | ";
+    cout << "Rating: " << reviewsFound[i].rating << " | ";
+    cout << "Avg. Rating: " << player->totalRating / player->ratingCount << endl;
+  }
+
+  return 0;
 
 }
