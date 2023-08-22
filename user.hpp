@@ -51,15 +51,6 @@ User::User(int uid) {
 
 void User::addReview(UserReview review) {
     reviews.push_back(review);
-    /*if (reviews.empty()) {
-        reviews.push_back(review);
-    } else {
-        int insertionIndex = 0, reviewsSize = reviews.size();
-        while (insertionIndex < reviewsSize && reviews[insertionIndex].rating < review.rating) {
-            insertionIndex++;
-        }
-        reviews.insert(reviews.begin() + insertionIndex, review);
-    }*/
 }
 
 void User::getReviews(vector<UserReview>* outVector) {

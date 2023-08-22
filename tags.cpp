@@ -51,9 +51,9 @@ int main() {
     TagTuple* tagTableEntry = tagTable.get(tag, hashedID);
     if (tagTableEntry == nullptr) {
       TagTuple tagTuple = TagTuple{tag, new set<PlayerTuple>};
-      tagTable.insertElement(tagTuple, hashTag(tag));
+      tagTableEntry = tagTable.insertElement(tagTuple, hashTag(tag));
     }
-    tagTableEntry
+    tagTableEntry->players->insert(PlayerTuple{tagSofifaID, 0});
   }
 
   return 0;

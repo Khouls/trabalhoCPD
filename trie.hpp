@@ -24,6 +24,9 @@ class TrieNode {
 };
 
 TrieNode::TrieNode() {
+  for (int i = 0; i < TRIESIZE; ++i) {
+    children[i] = nullptr;
+  }
   // Initialize all the pointers as null
   //  " " is 0, "." is 1, "'" is 2, """ is 3, "-" is 4, A-Z is 3-32
   playerID = -1;
@@ -44,7 +47,7 @@ void TrieNode::insertPlayer(string playerName, int pID) {
           currentChar = 1;
           break;
 
-        case 27: // '
+        case 39: // '
           currentChar = 2;
           break;
 
@@ -86,7 +89,7 @@ void TrieNode::searchPrefix(string playerName, vector<int>* foundPlayers) {
           currentChar = 1;
           break;
 
-        case 27: // '
+        case 39: // '
           currentChar = 2;
           break;
 
