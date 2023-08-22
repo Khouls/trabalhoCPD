@@ -6,6 +6,9 @@
         "cmath": "cpp",
         "iostream": "cpp",
         "vector": "cpp",
-        "xlocale": "cpp"
+        "xlocale": "cpp",
+        "chrono": "cpp",
+        "xhash": "cpp",
+        "xtree": "cpp"
     }
 }

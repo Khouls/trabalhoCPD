@@ -8,6 +8,7 @@
 #include "user.hpp"
 #include "trie.hpp"
 #include "hashtable.hpp"
+#include "tags.hpp"
 
 using namespace std;
 
@@ -19,6 +20,9 @@ using namespace std;
 // Nearest prime of N_USERS / 3
 #define USERS_SIZE 46171
 
+#define N_TAGS 963
+// Closest prime to N_TAGS / 5
+#define TAG_SIZE 193
 
 int main() {
   ifstream playersF("players.csv");
@@ -36,6 +40,8 @@ int main() {
 
   HashTable<User> reviewsList(USERS_SIZE);
 
+  HashTable<TagTuple> tagTable(TAG_SIZE);
+
   // Skip headers
   playersParser.next_field();
   playersParser.next_field();
@@ -49,6 +55,10 @@ int main() {
   ratingsParser.next_field();
   ratingsParser.next_field();
   ratingsParser.next_field();
+  tagsParser.next_field();
+  tagsParser.next_field();
+  tagsParser.next_field();
+  tagsParser.next_field();
 
   for (auto& playersRow : playersParser) {
     // sofifaID, name, positions
@@ -80,7 +90,21 @@ int main() {
     }
 
     user->addReview(review);
+  }
 
+  for (auto& tagRow : tagsParser) {
+    int tagUserID = stoi(tagRow[0]);
+    int tagSofifaID = stoi(tagRow[1]);
+    string tag = tagRow[2];
+    unsigned int hashedID = hashTag(tag, TAG_SIZE);  
+
+    TagTuple* tagTableEntry = tagTable.get(tag, hashedID);
+    if (tagTableEntry == nullptr) {
+      TagTuple tagTuple = TagTuple{tag, new set<int>};
+      tagTableEntry = tagTable.insertElement(tagTuple, hashTag(tag, TAG_SIZE));
+    }
+    tagTableEntry->playerIDs->insert(tagSofifaID);
+    
   }
 
   cout << "---------------------------" << endl;
@@ -111,6 +135,13 @@ int main() {
     cout << "Avg. Rating: " << player->totalRating / player->ratingCount << endl;
   }
 
+  cout << "---------------------------" << endl;
+
+  TagTuple foundTag = *(tagTable.get("Acrobat", hashTag("Acrobat", TAG_SIZE)));
+
+  for (int const& id : *(foundTag.playerIDs)) {
+    std::cout << playersList.get(id)->sofifaID << endl;
+  }
   return 0;
 
 }

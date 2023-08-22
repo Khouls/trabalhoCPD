@@ -25,22 +25,9 @@ bool operator==(const Player& p, const int& idx) {
     return idx == p.id;
 }
 
-struct PlayerTuple {
-    int playerID;
-    int count;
-};
-
-bool operator==(const PlayerTuple& p1, const PlayerTuple& p2) {
-    return p1.playerID == p2.playerID;
-}
-
-bool operator<(const PlayerTuple& p1, const PlayerTuple& p2) {
-    return p1.playerID < p2.playerID;
-}
-
 struct TagTuple {
     std::string tag;
-    std::set<PlayerTuple>* players;
+    std::set<int>* playerIDs;
 };
 
 bool operator==(const TagTuple& t1, const TagTuple& t2) {
