@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <chrono> 
 
 #include "parser.hpp"
 #include "player.hpp"
@@ -11,6 +12,7 @@
 #include "tags.hpp"
 
 using namespace std;
+using namespace std::chrono;
 
 #define N_PLAYERS 18944
 // Nearest prime of N_PLAYERS / 5
@@ -24,7 +26,13 @@ using namespace std;
 // Closest prime to N_TAGS / 5
 #define TAG_SIZE 193
 
+#define TIMEUNIT milliseconds
+
 int main() {
+  // Get starting timepoint
+  auto startTime = high_resolution_clock::now();
+  TIMEUNIT totalTime = TIMEUNIT(0);
+
   ifstream playersF("players.csv");
   aria::csv::CsvParser playersParser(playersF);
 
@@ -41,7 +49,6 @@ int main() {
   HashTable<User> reviewsList(USERS_SIZE);
 
   HashTable<TagTuple> tagTable(TAG_SIZE);
-
   // Skip headers
   playersParser.next_field();
   playersParser.next_field();
@@ -70,6 +77,12 @@ int main() {
     // Insert into Trie
     trieHead->insertPlayer(playersRow[1], idx);
   }
+  auto endTime = high_resolution_clock::now();
+
+  auto duration = duration_cast<TIMEUNIT>(endTime - startTime);
+  totalTime += duration;
+  cout << "Finished adding players in " << duration.count() << "ms" << endl;
+  startTime = high_resolution_clock::now();
 
   for (auto& ratingRow : ratingsParser) {
     int ratingUserID = stoi(ratingRow[0]);
@@ -91,6 +104,12 @@ int main() {
 
     user->addReview(review);
   }
+  endTime = high_resolution_clock::now();
+
+  duration = duration_cast<TIMEUNIT>(endTime - startTime);
+  totalTime += duration;
+  cout << "Finished adding reviews in " << duration.count() << "ms" << endl;
+  startTime = high_resolution_clock::now();
 
   for (auto& tagRow : tagsParser) {
     int tagUserID = stoi(tagRow[0]);
@@ -104,8 +123,15 @@ int main() {
       tagTableEntry = tagTable.insertElement(tagTuple, hashTag(tag, TAG_SIZE));
     }
     tagTableEntry->playerIDs->insert(tagSofifaID);
-    
   }
+
+  endTime = high_resolution_clock::now();
+
+  duration = duration_cast<TIMEUNIT>(endTime - startTime);
+  totalTime += duration;
+  cout << "Finished adding tags " << duration.count() << "ms" << endl;
+  cout << "Finished everything in " << totalTime.count() << "ms" << endl;
+  
 
   cout << "---------------------------" << endl;
   
@@ -137,7 +163,16 @@ int main() {
 
   cout << "---------------------------" << endl;
 
-  TagTuple foundTag = *(tagTable.get("Acrobat", hashTag("Acrobat", TAG_SIZE)));
+
+  set<int> tagIntersection;
+
+  vector<string> taglist = {"Chinese Super League", "Dribbler"};
+
+  TagTuple foundTag = *(tagTable.get(taglist[0], hashTag(taglist[0], TAG_SIZE)));
+
+  for (int i = 1; i < taglist.size(); ++i) {
+    
+  }
 
   for (int const& id : *(foundTag.playerIDs)) {
     std::cout << playersList.get(id)->sofifaID << endl;
