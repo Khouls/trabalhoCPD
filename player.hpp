@@ -9,8 +9,11 @@ struct Player{
     int id;
     std::string sofifaID;
     std::string name;
+    std::set<std::string> positions;
     float totalRating;
     int ratingCount;
+    
+    
 };
 
 bool operator==(const Player& p1, const Player& p2) {
@@ -25,9 +28,22 @@ bool operator==(const Player& p, const int& idx) {
     return idx == p.id;
 }
 
+struct PlayerTuple {
+    int playerID;
+    int count;
+};
+
+bool operator==(const PlayerTuple& p1, const PlayerTuple& p2) {
+    return p1.playerID == p2.playerID;
+}
+
+bool operator<(const PlayerTuple& p1, const PlayerTuple& p2) {
+    return p1.playerID < p2.playerID;
+}
+
 struct TagTuple {
     std::string tag;
-    std::set<int>* playerIDs;
+    std::set<PlayerTuple>* players;
 };
 
 bool operator==(const TagTuple& t1, const TagTuple& t2) {
@@ -36,6 +52,10 @@ bool operator==(const TagTuple& t1, const TagTuple& t2) {
 
 bool operator<(const TagTuple& t1, const TagTuple& t2) {
     return t1.tag.compare(t2.tag) < 0;
+}
+
+bool higherRating(Player p1, Player p2) {
+    return (p1.totalRating / p1.ratingCount) > (p2.totalRating / p2.ratingCount);
 }
 
 #endif
