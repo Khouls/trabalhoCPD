@@ -42,8 +42,8 @@ int main() {
   ifstream ratingsF("rating.csv");
   aria::csv::CsvParser ratingsParser(ratingsF);
 
-  TrieNode* trieHead = new TrieNode();
-  
+  TrieNode *trieHead = new TrieNode();
+
   HashTable<Player> playersList(PLAYERS_SIZE);
 
   HashTable<User> reviewsList(USERS_SIZE);
@@ -62,15 +62,12 @@ int main() {
   ratingsParser.next_field();
   ratingsParser.next_field();
   ratingsParser.next_field();
-  tagsParser.next_field();
-  tagsParser.next_field();
-  tagsParser.next_field();
-  tagsParser.next_field();
 
-  for (auto& playersRow : playersParser) {
+  for (auto &playersRow : playersParser)
+  {
     // sofifaID, name, positions
     int idx = stoi(playersRow[0]);
-    Player player = Player{idx, playersRow[0], playersRow[1], 0, 0};
+    Player player = Player{idx, playersRow[0], playersRow[1], posicoesVec(playersRow[2]), 0, 0};
 
     // Insert into hashtable
     playersList.insertElement(player, idx);
@@ -84,20 +81,22 @@ int main() {
   cout << "Finished adding players in " << duration.count() << "ms" << endl;
   startTime = high_resolution_clock::now();
 
-  for (auto& ratingRow : ratingsParser) {
+  for (auto &ratingRow : ratingsParser)
+  {
     int ratingUserID = stoi(ratingRow[0]);
     int ratingSofifaID = stoi(ratingRow[1]);
     float rating = stof(ratingRow[2]);
 
     UserReview review = UserReview{ratingSofifaID, rating};
 
-    Player * player = playersList.get(ratingSofifaID);
+    Player *player = playersList.get(ratingSofifaID);
     player->totalRating += rating;
     player->ratingCount++;
 
-    User* user = reviewsList.get(ratingUserID);
+    User *user = reviewsList.get(ratingUserID);
 
-    if (user == nullptr) {
+    if (user == nullptr)
+    {
       user = new User(ratingUserID);
       reviewsList.insertElement(*user, ratingUserID);
     }
@@ -134,12 +133,13 @@ int main() {
   
 
   cout << "---------------------------" << endl;
-  
+
   vector<int> playersFound;
   trieHead->searchPrefix("Fer", &playersFound);
 
-  for (int i = 0; i < playersFound.size(); ++i){
-    Player* player = playersList.get(playersFound[i]);
+  for (int i = 0; i < playersFound.size(); ++i)
+  {
+    Player *player = playersList.get(playersFound[i]);
     cout << "ID in hashTable: " << player->id << " | ";
     cout << "Sofifa ID: " << player->sofifaID << " | ";
     cout << "Name: " << player->name << " | ";
@@ -148,21 +148,19 @@ int main() {
 
   cout << "---------------------------" << endl;
 
-  User* user = reviewsList.get(4);
+  User *user = reviewsList.get(4);
   vector<UserReview> reviewsFound;
 
   user->getReviews(&reviewsFound);
 
-  for (int i = 0; i < reviewsFound.size(); ++i){
-    Player* player = playersList.get(reviewsFound[i].playerID);
+  for (int i = 0; i < reviewsFound.size(); ++i)
+  {
+    Player *player = playersList.get(reviewsFound[i].playerID);
     cout << "Sofifa ID: " << player->sofifaID << " | ";
     cout << "Name: " << player->name << " | ";
     cout << "Rating: " << reviewsFound[i].rating << " | ";
     cout << "Avg. Rating: " << player->totalRating / player->ratingCount << endl;
   }
-
-  cout << "---------------------------" << endl;
-
 
   set<int> tagIntersection;
 
@@ -170,13 +168,18 @@ int main() {
 
   TagTuple foundTag = *(tagTable.get(taglist[0], hashTag(taglist[0], TAG_SIZE)));
 
-  for (int i = 1; i < taglist.size(); ++i) {
-    
+  cout << "Init debug 2" << endl;
+  int topn;
+  std::string pos;
+
+  while (true) {
+    cout << "Topn" << endl;
+    cin >> topn;
+    cout << "Pos" << endl;
+    cin >> pos;
+
+    playersList.topPlayers(topn, pos);
   }
 
-  for (int const& id : *(foundTag.playerIDs)) {
-    std::cout << playersList.get(id)->sofifaID << endl;
-  }
   return 0;
-
 }

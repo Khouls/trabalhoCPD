@@ -9,6 +9,7 @@
         "xlocale": "cpp",
         "chrono": "cpp",
         "xhash": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "set": "cpp"
     }
 }
