@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cmath>
+#include <set>
 
 #include "parser.hpp"
 #include "player.hpp"
@@ -8,27 +10,51 @@
 
 using namespace std;
 
-#define N_PLAYERS 18944
-#define PLAYERS_SIZE N_PLAYERS / 5
+#define N_TAGS 963
+// Closest prime to N_TAGS / 5
+#define TAG_SIZE 193
+#define PRIME 13
 
+unsigned int hashTag(string tag) {
+  unsigned int hash = 0;
+  unsigned long long int power = 0;
 
+  int strLen = tag.length();
+
+  for (int i = 0; i < strLen; ++i) {
+    power = tag[i];
+    power *= pow(PRIME, i);
+    hash += power;
+    hash = hash % TAG_SIZE;
+  }
+  return hash;  
+}
 
 int main() {
   ifstream f("tags.csv");
   aria::csv::CsvParser parser(f);
 
-  // Skip header
-  //parser.next_field();
-  //parser.next_field();
-  //parser.next_field();
-  //parser.next_field();
+  HashTable<TagTuple> tagTable(TAG_SIZE);
 
-  int idx = 0;
-  for (auto& row : parser) {
-    //cout << row[0] << " | " << row[1] << " | " << row[2] << endl;
-    idx++;
+  // Skip header
+  parser.next_field();
+  parser.next_field();
+  parser.next_field();
+  parser.next_field();
+
+  for (auto& tagRow : parser) {
+    int tagUserID = stoi(tagRow[0]);
+    int tagSofifaID = stoi(tagRow[1]);
+    string tag = tagRow[2];
+    unsigned int hashedID = hashTag(tag);  
+
+    TagTuple* tagTableEntry = tagTable.get(tag, hashedID);
+    if (tagTableEntry == nullptr) {
+      TagTuple tagTuple = TagTuple{tag, new set<PlayerTuple>};
+      tagTable.insertElement(tagTuple, hashTag(tag));
+    }
+    tagTableEntry
   }
 
-  cout << "Hi" << endl;
-  
+  return 0;
 }

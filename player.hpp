@@ -40,7 +40,7 @@ bool operator<(const PlayerTuple& p1, const PlayerTuple& p2) {
 
 struct TagTuple {
     std::string tag;
-    std::vector<PlayerTuple>* players;
+    std::set<PlayerTuple>* players;
 };
 
 bool operator==(const TagTuple& t1, const TagTuple& t2) {
@@ -48,7 +48,7 @@ bool operator==(const TagTuple& t1, const TagTuple& t2) {
 }
 
 bool operator<(const TagTuple& t1, const TagTuple& t2) {
-    return t1.tag.compare(t2.tag) == 0;
+    return t1.tag.compare(t2.tag) < 0;
 }
 
 #endif

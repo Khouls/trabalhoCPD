@@ -14,8 +14,9 @@ class HashTable {
     public :
         vector<vector<T>> elements;
         HashTable(int size);
-        void insertElement(T elem, int elemID);
+        T* insertElement(T elem, int elemID);
         T* get(int elemID);
+        TagTuple* get(string tag, int hashedID);
 };
 
 template <typename T>
@@ -24,10 +25,12 @@ HashTable<T>::HashTable(int size) {
 }
 
 template <typename T>
-void HashTable<T>::insertElement(T elem, int elemID) {
+T* HashTable<T>::insertElement(T elem, int elemID) {
     int insertionIndex = elemID % elements.size();
 
     elements[insertionIndex].push_back(elem);
+
+    return (T*)&elements[insertionIndex].back();
 }
 
 template <typename T>
@@ -40,7 +43,17 @@ T* HashTable<T>::get(int elemID) {
         }
     }
 
-    return  nullptr;
+    return nullptr;
+}
+
+template <>
+TagTuple* HashTable<TagTuple>::get(string tag, int hashedID) {
+    for (int i = 0; i < elements[hashedID].size(); ++i) {
+        if (elements[hashedID][i].tag.compare(tag) == 0){
+            return (TagTuple*)&elements[hashedID][i];
+        }
+    }
+    return nullptr;
 }
 
 #endif

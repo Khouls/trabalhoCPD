@@ -12,9 +12,12 @@
 using namespace std;
 
 #define N_PLAYERS 18944
-#define PLAYERS_SIZE N_PLAYERS / 3
+// Nearest prime of N_PLAYERS / 5
+#define PLAYERS_SIZE 3793
+
 #define N_USERS 138493
-#define USERS_SIZE N_USERS / 3
+// Nearest prime of N_USERS / 3
+#define USERS_SIZE 46171
 
 
 int main() {
