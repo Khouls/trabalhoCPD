@@ -1,3 +1,6 @@
+#ifndef Tags_Defined
+#define Tags_Defined
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -26,3 +29,5 @@ unsigned int hashTag(string tag, int tableSize) {
   }
   return hash;  
 }
+
+#endif

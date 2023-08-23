@@ -74,7 +74,6 @@ set<std::string> posicoesVec(std::string posicoes) {
     {
         if (c == ',')
         {
-            
             posVec.insert(tempString);
             tempString = "";
         }
@@ -121,11 +120,17 @@ int HashTable<T>::topPlayers(int topn, std::string pos) {
   
   typename set<Player, decltype(fun)>::iterator iterator;
   int i = 0;
+
   for(iterator = topList.begin(); i < topn && iterator != topList.end(); iterator++){
-     cout << iterator->name << " -> " << iterator->totalRating / iterator->ratingCount << endl;
+     cout << iterator->sofifaID << " | ";
+     cout << iterator->name << " | ";
+     for (string pos : iterator->positions){
+        cout << pos << " ";
+     } 
+     cout << "| Rating: " << iterator->totalRating / iterator->ratingCount << " | ";
+     cout << "Count: " << iterator->ratingCount << endl;
      i++;
   }
-
 
   return 4;
 }

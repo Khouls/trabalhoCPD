@@ -10,6 +10,11 @@
         "chrono": "cpp",
         "xhash": "cpp",
         "xtree": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "algorithm": "cpp",
+        "initializer_list": "cpp",
+        "list": "cpp",
+        "regex": "cpp",
+        "xutility": "cpp"
     }
 }

@@ -10,6 +10,7 @@
 #include "trie.hpp"
 #include "hashtable.hpp"
 #include "tags.hpp"
+#include "manageOperations.hpp"
 
 using namespace std;
 using namespace std::chrono;
@@ -42,11 +43,11 @@ int main() {
   ifstream ratingsF("rating.csv");
   aria::csv::CsvParser ratingsParser(ratingsF);
 
-  TrieNode *trieHead = new TrieNode();
+  TrieNode trieHead;
 
-  HashTable<Player> playersList(PLAYERS_SIZE);
+  HashTable<Player> playersTable(PLAYERS_SIZE);
 
-  HashTable<User> reviewsList(USERS_SIZE);
+  HashTable<User> reviewsTable(USERS_SIZE);
 
   HashTable<TagTuple> tagTable(TAG_SIZE);
   // Skip headers
@@ -70,9 +71,9 @@ int main() {
     Player player = Player{idx, playersRow[0], playersRow[1], posicoesVec(playersRow[2]), 0, 0};
 
     // Insert into hashtable
-    playersList.insertElement(player, idx);
+    playersTable.insertElement(player, idx);
     // Insert into Trie
-    trieHead->insertPlayer(playersRow[1], idx);
+    trieHead.insertPlayer(playersRow[1], idx);
   }
   auto endTime = high_resolution_clock::now();
 
@@ -89,16 +90,16 @@ int main() {
 
     UserReview review = UserReview{ratingSofifaID, rating};
 
-    Player *player = playersList.get(ratingSofifaID);
+    Player *player = playersTable.get(ratingSofifaID);
     player->totalRating += rating;
     player->ratingCount++;
 
-    User *user = reviewsList.get(ratingUserID);
+    User *user = reviewsTable.get(ratingUserID);
 
     if (user == nullptr)
     {
       user = new User(ratingUserID);
-      reviewsList.insertElement(*user, ratingUserID);
+      reviewsTable.insertElement(*user, ratingUserID);
     }
 
     user->addReview(review);
@@ -131,55 +132,38 @@ int main() {
   cout << "Finished adding tags " << duration.count() << "ms" << endl;
   cout << "Finished everything in " << totalTime.count() << "ms" << endl;
   
+  string input;
 
-  cout << "---------------------------" << endl;
+  bool continueOperations = true;
 
-  vector<int> playersFound;
-  trieHead->searchPrefix("Fer", &playersFound);
+  while (continueOperations) {
+    cout << "---------------------------" << endl;
+    getline(cin, input);
+    Operation op = parseInput(input);
+    switch (op.code) {
+    case PREFIX_SEARCH:
+      prefixSearch(op.params[0], &trieHead, &playersTable);
+      break;
 
-  for (int i = 0; i < playersFound.size(); ++i)
-  {
-    Player *player = playersList.get(playersFound[i]);
-    cout << "ID in hashTable: " << player->id << " | ";
-    cout << "Sofifa ID: " << player->sofifaID << " | ";
-    cout << "Name: " << player->name << " | ";
-    cout << "Avg. Rating: " << player->totalRating / player->ratingCount << endl;
+    case USER_SEARCH:
+      userSearch(stoi(op.params[0]), &reviewsTable, &playersTable);
+      break;
+
+    case TOP_SEARCH:
+      topSearch(stoi(op.params[0]), op.params[1], &playersTable);
+      break;
+
+    case TAG_SEARCH:
+      tagSearch(op.params, &tagTable, &playersTable);
+      break;
+    
+    case EXIT_CODE:
+      continueOperations = false;
+      break;
+    
+    default:
+      break;
+    }
   }
-
-  cout << "---------------------------" << endl;
-
-  User *user = reviewsList.get(4);
-  vector<UserReview> reviewsFound;
-
-  user->getReviews(&reviewsFound);
-
-  for (int i = 0; i < reviewsFound.size(); ++i)
-  {
-    Player *player = playersList.get(reviewsFound[i].playerID);
-    cout << "Sofifa ID: " << player->sofifaID << " | ";
-    cout << "Name: " << player->name << " | ";
-    cout << "Rating: " << reviewsFound[i].rating << " | ";
-    cout << "Avg. Rating: " << player->totalRating / player->ratingCount << endl;
-  }
-
-  set<int> tagIntersection;
-
-  vector<string> taglist = {"Chinese Super League", "Dribbler"};
-
-  TagTuple foundTag = *(tagTable.get(taglist[0], hashTag(taglist[0], TAG_SIZE)));
-
-  cout << "Init debug 2" << endl;
-  int topn;
-  std::string pos;
-
-  while (true) {
-    cout << "Topn" << endl;
-    cin >> topn;
-    cout << "Pos" << endl;
-    cin >> pos;
-
-    playersList.topPlayers(topn, pos);
-  }
-
   return 0;
 }
