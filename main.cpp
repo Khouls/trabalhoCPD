@@ -111,11 +111,16 @@ int main() {
   cout << "Finished adding reviews in " << duration.count() << "ms" << endl;
   startTime = high_resolution_clock::now();
 
+
+  //set containing all known tags
+  set<string> allTags;
+
   for (auto& tagRow : tagsParser) {
     int tagUserID = stoi(tagRow[0]);
     int tagSofifaID = stoi(tagRow[1]);
     string tag = tagRow[2];
-    unsigned int hashedID = hashTag(tag, TAG_SIZE);  
+    unsigned int hashedID = hashTag(tag, TAG_SIZE);
+    allTags.insert(tag);  
 
     TagTuple* tagTableEntry = tagTable.get(tag, hashedID);
     if (tagTableEntry == nullptr) {
@@ -139,7 +144,7 @@ int main() {
   while (continueOperations) {
     cout << "---------------------------" << endl;
     getline(cin, input);
-    Operation op = parseInput(input);
+    Operation op = parseInput(input, allTags);
     switch (op.code) {
     case PREFIX_SEARCH:
       prefixSearch(op.params[0], &trieHead, &playersTable);
@@ -154,7 +159,7 @@ int main() {
       break;
 
     case TAG_SEARCH:
-      tagSearch(op.params, &tagTable, &playersTable);
+      tagSearch(op.params, &tagTable, &playersTable, allTags);
       break;
     
     case EXIT_CODE:
